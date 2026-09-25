@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <script>var GM_KEY = "AIzaSyDMLaJV9hUhsaA51VjHwBzER6_ixOfPv40";</script>
+  <script>var GM_KEY = "GOOGLE_KEY_PLACEHOLDER";</script>
   <script>
     // Society points ({n, lat, lon}) injected by app.py from the CSV.
     // Kept in its own <script> block so that an unreplaced placeholder cannot
@@ -249,6 +249,13 @@
       background: rgba(168, 85, 247, 0.1);
       border-color: rgba(168, 85, 247, 0.4);
       color: #c084fc;
+    }
+
+    /* Radius button that is currently applied (500 m / 1 km / 3 km) */
+    .rbtn.active {
+      filter: brightness(1.3);
+      border-color: currentColor;
+      box-shadow: 0 0 10px rgba(255, 212, 0, 0.25);
     }
 
     /* ── PROJECT BUILDING PIN ── */
@@ -3321,6 +3328,11 @@
     var _userMarkers = [];
     var _carouselIdx = 0;
 
+    // -- GLOBAL STATE FOR PICKING LOCATION ON MAP ----------------
+    var selectedLat = null;
+    var selectedLng = null;
+    var selectedRadius = null;
+
     function parseBhkConfigs(lst) {
       var bhks = (lst.bhk_types || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
       var avg = (lst.price_min && lst.price_max)
@@ -3484,6 +3496,12 @@
 
     // ── SEND TO STREAMLIT ──────────────────────────────────────────────────────
     function sendMsg(msg) {
+      // Standalone / static build (no Streamlit parent): there is nothing to send
+      // the pick to, and the fallback below would RELOAD the page - which would
+      // discard the radius filter the user just applied. Streamlit keeps working
+      // exactly as before because there window.parent !== window.
+      if (window.parent === window) return;
+
       var pw = window.parent, doc = pw.document;
       var inp = Array.from(doc.querySelectorAll('input[type="text"]'))
         .find(function (i) { return i.placeholder && i.placeholder.includes('message'); });
@@ -3689,16 +3707,97 @@
 
     // ── UPDATE COORD BAR ───────────────────────────────────────────────────────
     function updateStatus() {
+      // If a radius filter is active, keep it centred on the pin / crosshair the
+      // user just moved, then re-filter both layers for the new centre.
+      if (selectedRadius !== null && (_lat !== selectedLat || _lon !== selectedLng)) {
+        selectedLat = _lat;
+        selectedLng = _lon;
+        _socKey = null;
+        updateRadiusCircle();
+        renderMarkers();
+      }
+
       document.getElementById('status-left').textContent =
-        '\u25CF Selected: ' + _lat.toFixed(5) + '\u00b0N, ' + _lon.toFixed(5) + '\u00b0E  \u2014  pick a radius below';
+        '\u25CF Selected: ' + _lat.toFixed(5) + '\u00b0N, ' + _lon.toFixed(5) + '\u00b0E  \u2014  ' +
+        (selectedRadius === null ? 'pick a radius below' : 'within ' + radiusLabel(selectedRadius) + ' (active)');
     }
 
     // ── CONFIRM LOCATION ───────────────────────────────────────────────────────
     function confirm_(r) {
-      sendMsg('MAPPICK:' + _lat.toFixed(6) + ',' + _lon.toFixed(6) + ',' + r);
+      if (_lat == null || _lon == null) {
+        alert("Please select a location on the map first.");
+        return;
+      }
+
+      selectedLat = _lat;
+      selectedLng = _lon;
+      selectedRadius = r;
+
+      _socKey = null;
+
+      setActiveRadiusBtn(r);      // highlight the radius button that is now applied
+      updateRadiusCircle();       // yellow circle around the selected point
+      renderMarkers();            // filters projects AND societies down to this radius
+      updateStatus();             // show the applied radius in the status bar
+
+      // Keep your existing behavior
+      sendMsg(
+        'MAPPICK:' +
+        _lat.toFixed(6) + ',' +
+        _lon.toFixed(6) + ',' +
+        r
+      );
     }
 
     // ── SEARCH ────────────────────────────────────────────────────────────────
+    // ── RADIUS FILTER HELPERS (500 m / 1 km / 3 km buttons) ────────────────────
+    var _radiusCircle = null;      // yellow circle showing the applied radius
+
+    function radiusLabel(r) {
+      return r < 1 ? Math.round(r * 1000) + ' m' : r + ' km';
+    }
+
+    // Highlight the radius button that is currently applied
+    function setActiveRadiusBtn(r) {
+      document.querySelectorAll('#rbtns .rbtn').forEach(function (b) {
+        var m = /confirm_\(([\d.]+)\)/.exec(b.getAttribute('onclick') || '');
+        b.classList.toggle('active', !!m && parseFloat(m[1]) === r);
+      });
+    }
+
+    // Draw / move / remove the yellow circle that shows the applied radius
+    function updateRadiusCircle() {
+      if (typeof google === 'undefined' || !_map) return;
+
+      if (selectedRadius === null || selectedLat === null || selectedLng === null) {
+        if (_radiusCircle) { _radiusCircle.setMap(null); _radiusCircle = null; }
+        return;
+      }
+
+      var center = { lat: selectedLat, lng: selectedLng };
+      var meters = selectedRadius * 1000;
+
+      if (_radiusCircle) {
+        _radiusCircle.setCenter(center);
+        _radiusCircle.setRadius(meters);
+        _radiusCircle.setMap(_map);
+        return;
+      }
+
+      _radiusCircle = new google.maps.Circle({
+        map: _map,
+        center: center,
+        radius: meters,
+        strokeColor: '#ffd400',
+        strokeOpacity: 0.9,
+        strokeWeight: 2,
+        fillColor: '#ffd400',
+        fillOpacity: 0.08,
+        clickable: false,
+        zIndex: 4
+      });
+    }
+
     var searchInp = document.getElementById('search-inp');
     var suggBox = document.getElementById('suggestions');
 
@@ -3898,6 +3997,11 @@
       var visible = 0;
       PROJECTS.forEach(function (proj) {
         if (!passesFilter(proj)) return;
+
+        // Radius filter - only show projects inside the applied 500 m / 1 km / 3 km zone
+        if (selectedRadius !== null &&
+          distanceKm(selectedLat, selectedLng, proj.lat, proj.lon) > selectedRadius) return;
+
         visible++;
 
         // Use Marker with custom label (badge HTML via OverlayView)
@@ -3995,7 +4099,9 @@
         return;
       }
 
-      if (_map.getZoom() < SOC_MIN_ZOOM) {
+      // A radius filter works at any zoom - the zoom gate only protects the
+      // un-filtered "show everything" view.
+      if (selectedRadius === null && _map.getZoom() < SOC_MIN_ZOOM) {
         clearSocietyMarkers(); _socKey = null;
         if (status) {
           status.textContent = projTxt + ' · ' + total +
@@ -4008,67 +4114,122 @@
       if (!b) return;
       var sw = b.getSouthWest(), ne = b.getNorthEast();
       var sLat = sw.lat(), nLat = ne.lat(), wLng = sw.lng(), eLng = ne.lng();
-      var key = _map.getZoom() + '|' + sLat.toFixed(4) + ',' + wLng.toFixed(4) +
-        ',' + nLat.toFixed(4) + ',' + eLng.toFixed(4);
+      var key = (selectedRadius === null)
+        ? _map.getZoom() + '|' + sLat.toFixed(4) + ',' + wLng.toFixed(4) +
+          ',' + nLat.toFixed(4) + ',' + eLng.toFixed(4)
+        : 'r|' + selectedRadius + '@' + selectedLat.toFixed(5) + ',' + selectedLng.toFixed(5);
       if (key === _socKey) return;    // same view - keep the pins already drawn
       _socKey = key;
 
       clearSocietyMarkers();
       var drawn = 0;
       for (var i = 0; i < total && drawn < SOC_MAX_PINS; i++) {
+
         var soc = SOCIETIES[i];
         if (!soc) continue;
-        if (soc.latitude < sLat || soc.latitude > nLat ||
-          soc.longitude < wLng || soc.longitude > eLng) continue;
+
+        // Radius filter
+        if (selectedRadius !== null) {
+
+          var distance = distanceKm(
+            selectedLat,
+            selectedLng,
+            soc.latitude,
+            soc.longitude
+          );
+
+          if (distance > selectedRadius) continue;
+
+        } else {
+
+          // Viewport filter
+          if (
+            soc.latitude < sLat ||
+            soc.latitude > nLat ||
+            soc.longitude < wLng ||
+            soc.longitude > eLng
+          ) continue;
+        }
+
+        // Passed filters
         drawn++;
+
+        // CREATE MARKER INSIDE LOOP
         (function (s) {
           var ov = new google.maps.OverlayView();
+
           ov._s = s;
           ov._div = null;
-          ov.onAdd = function () {
 
+          ov.onAdd = function () {
             this._div = societyPin(s);
 
             this._div.addEventListener('click', function (e) {
-
               e.stopPropagation();
-
               openSocietyModal(s);
-
             });
 
             this.getPanes()
               .overlayMouseTarget
               .appendChild(this._div);
           };
+
           ov.draw = function () {
             var pr = this.getProjection();
             if (!pr || !this._div) return;
+
             var pt = pr.fromLatLngToDivPixel(
               new google.maps.LatLng(
                 this._s.latitude,
                 this._s.longitude
               )
             );
+
             if (pt) {
               this._div.style.position = 'absolute';
               this._div.style.left = (pt.x - 11) + 'px';
               this._div.style.top = (pt.y - 22) + 'px';
             }
           };
+
           ov.onRemove = function () {
-            if (this._div && this._div.parentNode) this._div.parentNode.removeChild(this._div);
+            if (this._div && this._div.parentNode) {
+              this._div.parentNode.removeChild(this._div);
+            }
+
             this._div = null;
           };
+
           ov.setMap(_map);
           _socMarkers.push(ov);
-        })(soc);
-      }
 
+        })(soc);
+
+      }
       if (status) {
         status.textContent = projTxt + ' · ' + drawn + ' society pin' + (drawn === 1 ? '' : 's') +
-          (drawn >= SOC_MAX_PINS ? ' (zoom in for the rest)' : '');
+          (selectedRadius === null ? '' : ' within ' + radiusLabel(selectedRadius)) +
+          (drawn >= SOC_MAX_PINS && selectedRadius === null ? ' (zoom in for the rest)' : '');
       }
+    }
+
+    function distanceKm(lat1, lon1, lat2, lon2) {
+
+      var R = 6371;
+
+      var dLat = (lat2 - lat1) * Math.PI / 180;
+      var dLon = (lon2 - lon1) * Math.PI / 180;
+
+      var a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+
+      return R * 2 * Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
+      );
     }
 
     function toggleSocietyLayer() {
@@ -5354,7 +5515,7 @@
         .getElementById('society-modal')
         .classList.add('open');
     }
-    function closeSocietyModal() { document.getElementById('society-modal').classList.remove('open');}
+    function closeSocietyModal() { document.getElementById('society-modal').classList.remove('open'); }
 
     function formatDate(value) {
       if (!value) return '—';
