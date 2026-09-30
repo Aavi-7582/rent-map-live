@@ -123,16 +123,7 @@
       white-space: nowrap;
     }
 
-    #closebtn {
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+  
 
     /* ── FILTER BAR ── */
 #filterbar {
@@ -2313,19 +2304,30 @@
     }
 
     #society-modal-box {
-      background: #0d1220;
-      border: 1px solid #1e2840;
-      border-radius: 16px;
+      background: linear-gradient(180deg, #101728, #0c111f);
+      border: 1px solid rgba(122, 142, 178, 0.25);
+      border-radius: 14px;
 
       width: min(94vw, 440px);
       max-height: 85vh;
 
       overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #2a3755 transparent;
 
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
 
-      padding: 20px;
+      padding: 22px 22px 18px;
       position: relative;
+    }
+
+    #society-modal-box::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #society-modal-box::-webkit-scrollbar-thumb {
+      background: #2a3755;
+      border-radius: 6px;
     }
 
 
@@ -2334,54 +2336,65 @@
     #society-modal-close {
       position: absolute;
 
-      top: 14px;
-      right: 14px;
+      top: 12px;
+      right: 12px;
 
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(122, 142, 178, 0.22);
 
-      color: #ef4444;
+      color: #9fb0c8;
 
-      border-radius: 6px;
-      padding: 3px 10px;
+      border-radius: 999px;
+      padding: 5px 10px;
 
-      font-size: 0.8rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1;
       cursor: pointer;
+    }
+
+    #society-modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e7edf6;
     }
 
 
     /* Header */
 
     #society-modal-label {
-      font-size: 0.65rem;
-      color: #4a5568;
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: #8d9cb5;
 
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.4px;
 
-      margin-bottom: 12px;
+      margin-bottom: 8px;
 
-      padding-right: 80px;
+      padding-right: 90px;
+      padding-left: 8px;
+      border-left: 2px solid #d4a843;
     }
 
     #society-modal-title {
-      font-size: 1.35rem;
-      font-weight: 800;
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.25;
 
-      color: #4ade80;
+      color: #f1f5f9;
 
-      margin: 8px 0 5px;
+      margin: 0 0 5px;
 
       padding-right: 70px;
     }
 
     #society-modal-location {
-      font-size: 0.82rem;
-      font-weight: 600;
+      font-size: 0.8rem;
+      font-weight: 400;
 
-      color: #f0c060;
+      color: #8b98b0;
 
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
 
@@ -2397,18 +2410,19 @@
     }
 
     .society-tag {
-      border-radius: 14px;
+      border-radius: 999px;
 
-      padding: 4px 10px;
+      padding: 4px 11px;
 
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 600;
+      letter-spacing: 0.2px;
 
-      background: rgba(212, 168, 67, 0.1);
+      background: rgba(212, 168, 67, 0.12);
 
-      color: #d4a843;
+      color: #e3b95c;
 
-      border: 1px solid rgba(212, 168, 67, 0.3);
+      border: 1px solid rgba(212, 168, 67, 0.35);
     }
 
 
@@ -2417,23 +2431,24 @@
     #society-modal-divider {
       border: none;
 
-      border-top: 1px solid #1e2840;
+      border-top: 1px solid rgba(122, 142, 178, 0.2);
 
-      margin: 12px 0;
+      margin: 14px 0 12px;
     }
 
 
     /* Section label */
 
     #society-info-label {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
+      font-weight: 600;
 
-      color: #4a5568;
+      color: #7e8ca6;
 
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
 
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
 
@@ -2444,37 +2459,38 @@
 
       grid-template-columns: 1fr 1fr;
 
-      gap: 6px;
+      gap: 8px;
 
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .society-info-item {
-      background: #131929;
+      background: rgba(255, 255, 255, 0.03);
 
-      border: 1px solid #1e2840;
+      border: 1px solid rgba(122, 142, 178, 0.16);
 
       border-radius: 10px;
 
-      padding: 10px;
+      padding: 10px 12px;
     }
 
     .society-info-key {
-      font-size: 0.62rem;
+      font-size: 0.6rem;
+      font-weight: 600;
 
-      color: #4a5568;
+      color: #7e8ca6;
 
       text-transform: uppercase;
 
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
 
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
 
     .society-info-value {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
 
-      color: #dbe4ff;
+      color: #e7edf6;
 
       font-weight: 600;
 
@@ -2485,9 +2501,9 @@
     /* Location */
 
     #society-location-section {
-      background: #131929;
+      background: rgba(255, 255, 255, 0.03);
 
-      border: 1px solid #1e2840;
+      border: 1px solid rgba(122, 142, 178, 0.16);
 
       border-radius: 10px;
 
@@ -2497,29 +2513,30 @@
     }
 
     .society-section-label {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
+      font-weight: 600;
 
-      color: #4a5568;
+      color: #7e8ca6;
 
       text-transform: uppercase;
 
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
 
-      margin-bottom: 6px;
+      margin-bottom: 7px;
     }
 
     #soc-address {
-      color: #dbe4ff;
+      color: #e7edf6;
 
-      font-size: 0.78rem;
+      font-size: 0.8rem;
 
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     #soc-locality {
-      color: #6b7a9a;
+      color: #8b98b0;
 
-      font-size: 0.72rem;
+      font-size: 0.74rem;
 
       margin-top: 5px;
     }
@@ -2529,7 +2546,9 @@
 
     #society-rera-link,
     #society-directions {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       width: 100%;
 
@@ -2541,7 +2560,7 @@
 
       border-radius: 10px;
 
-      padding: 10px;
+      padding: 11px;
 
       font-size: 0.82rem;
 
@@ -2550,22 +2569,29 @@
       cursor: pointer;
 
       margin-top: 8px;
+
+      transition: filter 0.15s, background 0.15s;
+    }
+
+    #society-rera-link:hover,
+    #society-directions:hover {
+      filter: brightness(1.12);
     }
 
     #society-rera-link {
-      background: rgba(168, 85, 247, 0.1);
+      background: rgba(255, 255, 255, 0.05);
 
-      border: 1px solid rgba(168, 85, 247, 0.3);
+      border: 1px solid rgba(122, 142, 178, 0.25);
 
-      color: #c084fc;
+      color: #dbe4ff;
     }
 
     #society-directions {
-      background: rgba(212, 168, 67, 0.1);
+      background: #d4a843;
 
-      border: 1px solid rgba(212, 168, 67, 0.3);
+      border: 1px solid #d4a843;
 
-      color: #d4a843;
+      color: #0a0e1a;
     }
 
 
@@ -2732,15 +2758,25 @@
       font-size: 0.85rem;
     }
 
-    /* Google's PlaceAutocompleteElement sits inside the same pill */
+    /* Single search bar: the Maps API auto-injects a PlaceAutocompleteElement
+       inside #search-wrap and it paints its own overlapping input box
+       (the dark rectangle in the screenshot) while the original pill input
+       gets hidden. Hide the injected element and keep the original pill
+       input visible + typable. No JS / handler / ID changed. */
     #search-wrap gmp-place-autocomplete,
     #search-wrap .gmp-place-autocomplete {
+      display: none !important;
+    }
+
+    #search-wrap #search-inp {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
       flex: 1 1 auto !important;
-      width: 100% !important;
       min-width: 0 !important;
-      --gmp-mat-input-text-color: var(--glass-ink) !important;
-      --gmp-mat-input-label-color: var(--glass-dim) !important;
-      --gmp-mat-input-active-label-color: #d4a843 !important;
+      color: var(--glass-ink) !important;
+      caret-color: var(--glass-ink);
+      pointer-events: auto !important;
     }
 
     #suggestions {
@@ -2856,44 +2892,35 @@
       border-color: rgba(168, 85, 247, 0.45);
     }
 
-    #closebtn {
-      background: var(--glass);
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      border-radius: 999px;
-      padding: 10px 16px;
-      color: #f87171;
-      font-size: 0.78rem;
-      cursor: pointer;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-    }
-
-    #closebtn:hover {
-      border-color: #ef4444;
-      color: #fca5a5;
-    }
-
     /* ── FLOATING FILTER CARD (sits under the search bar) ── */
     #filterbar {
       position: fixed;
       top: 108px;
       left: 50%;
       transform: translateX(-50%);
-      width: auto;
+      width: max-content;
       max-width: calc(100vw - 24px);
       height: auto;
-      padding: 8px 14px;
+      padding: 8px 12px;
       background: var(--glass);
       border: 1px solid var(--glass-line);
       border-radius: 16px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
-      flex-wrap: wrap;
-      gap: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
       z-index: 28;
       transition: opacity 0.16s, transform 0.16s;
+    }
+
+    #filterbar::-webkit-scrollbar {
+      display: none;
     }
 
     #filterbar.collapsed {
@@ -2906,14 +2933,15 @@
       color: var(--glass-dim);
     }
 
-    .fbtn {
+    #filterbar .fbtn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--glass-line);
       border-radius: 999px;
-      padding: 5px 14px;
+      padding: 5px 12px;
       color: #cbd6e6;
       font-size: 0.75rem;
       font-weight: 600;
+      flex: 0 0 auto;
     }
 
     .fbtn:hover,
@@ -2926,9 +2954,22 @@
     /* Radius pills live INSIDE #filterbar now (moved from the old bottom #radiusbar).
        Compact pill sizing so BHK + Price + Radius fit one card. */
     #filterbar #rbtns {
-      display: flex;
+      display: inline-flex !important;
       gap: 6px;
       align-items: center;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    /* "Price:" label + dropdown travel as one unit; labels never split. */
+    #filterbar .filter-lbl {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    #filterbar .filter-lbl + #price-filter {
+      margin-left: -2px;
+      flex: 0 0 auto;
     }
 
     #filterbar .rbtn {
@@ -3233,8 +3274,16 @@
     }
 
     @media (max-width: 700px) {
+      #filterbar {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        row-gap: 0;
+        padding: 8px 10px;
+      }
+
       #filterbar #rbtns {
-        flex-wrap: wrap;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
       }
 
       .rbtn {
@@ -3405,6 +3454,15 @@
       opacity: 1;
     }
 
+    /* Spiderfy ring: fanned-out pins around the true cluster centre. */
+    .cluster-ring {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      border: 2px solid rgba(236, 72, 153, 0.75);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
     /* ── end of bengaluru.rent-style UI overrides ── */
   </style>
 </head>
@@ -3440,8 +3498,6 @@
             style="display:none;position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;border-radius:50%;width:16px;height:16px;font-size:0.55rem;align-items:center;justify-content:center;font-weight:700;">0</span></button>
       </div>
     </div>
-
-    <button id="closebtn" onclick="sendMsg('CLOSEMAP:1')">✕ Close</button>
   </div>
 
   <!-- FILTER BAR -->
@@ -3460,7 +3516,6 @@
       <option value="50-55">₹50L–55L</option>
       <option value="55-60">₹55L–60L</option>
     </select>
-    <div style="flex-basis:100%; height:0;"></div>
     <span class="filter-lbl" style="margin-left:8px;">Radius:</span>
     <div id="rbtns" style="display:flex;gap:6px;">
       <button class="rbtn" id="r500" onclick="confirm_(0.5)">⬤ 500 m</button>
@@ -4085,7 +4140,7 @@
 
       <!-- HEADER -->
       <div id="society-modal-label">
-        🏢 RERA PROJECT
+        RERA PROJECT
       </div>
 
       <div id="society-modal-title"></div>
@@ -4134,7 +4189,7 @@
       <div id="society-location-section">
 
         <div class="society-section-label">
-          📍 LOCATION
+          LOCATION
         </div>
 
         <div id="soc-address"></div>
@@ -4145,27 +4200,27 @@
 
       <!-- ACTIONS -->
       <a id="society-rera-link" href="#" target="_blank" rel="noopener">
-        🔗 View RERA Details
+        View RERA Details
       </a>
 
       <a id="society-directions" href="#" target="_blank" rel="noopener">
-        🗺️ Get Directions
+        Get Directions
       </a>
 
       <button id="soc-modal-review-btn" style="
             display:block;
             width:100%;
             margin-top:8px;
-            background:rgba(74,222,128,0.1);
-            border:1px solid rgba(74,222,128,0.3);
-            color:#4ade80;
+            background:transparent;
+            border:1px solid #2a3755;
+            color:#9fafc0;
             border-radius:10px;
             padding:10px;
             font-size:0.82rem;
             font-weight:600;
             cursor:pointer;
           ">
-        💬 Community Reviews & Verify
+        Community Reviews &amp; Verify
       </button>
 
     </div>
@@ -4178,7 +4233,7 @@
 
     // ── SUPABASE CONFIG (injected by app.py) ─────────────────────
     var _SB_URL = 'SUPABASE_URL_PLACEHOLDER';
-    var _SB_KEY = 'SUPABASE_ANON_KEY_PLACEHOLDER';
+    var _SB_KEY = 'SUPABASE_KEY_PLACEHOLDER';
 
     // ── USER LISTINGS FROM SUPABASE ────────────────────────────────────────
     var USER_LISTINGS = [];
@@ -6585,7 +6640,8 @@
     var CLUSTER_NOUN_PROJ = 'projects';     // 🏗️ label when it holds RERA projects only
     var CLUSTER_NOUN_MIXED = 'societies';   // 🏢 label when both are present (split on line 2)
     var CLUSTER_MAX_NODES = 800;            // per-view cap, keeps the DOM responsive
-    var CLUSTER_SPLIT_KM = 0.03;            // closer than this a cluster cannot split
+    var CLUSTER_SPLIT_KM = 0.03;            // below ~30 m spread a cell cannot split -> spiderfy
+    var CLUSTER_MAX_ZOOM = 21;              // Google's max - zoomToCluster may go this far
 
     var _clusterOn = true;
     var _clusterNodes = [];
@@ -6770,23 +6826,40 @@
         if (d > maxKm) maxKm = d;
       });
       var z = _map.getZoom() || 12;
-      if (maxKm < CLUSTER_SPLIT_KM || z >= 19) { spiderfyCluster(c); return; }
-      _map.fitBounds(bounds, { padding: 90 });
+      // Members too close to ever split fan out (spiderfy) so each society
+      // stays clickable instead of hiding behind the top one.
+      if (maxKm < CLUSTER_SPLIT_KM) {
+        if (z < CLUSTER_MAX_ZOOM) {
+          _map.setZoom(Math.min(z + 2, CLUSTER_MAX_ZOOM));
+          _map.setCenter({ lat: c.lat, lng: c.lon });
+          setTimeout(function () { spiderfyCluster(c); }, 350);
+        } else { spiderfyCluster(c); }
+        return;
+      }
+      if (z >= CLUSTER_MAX_ZOOM) { spiderfyCluster(c); return; }
+      _map.fitBounds(bounds, { top: 110, right: 60, bottom: 60, left: 60 });
     }
 
-    // Societies on the very same building can never separate on zoom - fan them out
     function spiderfyCluster(c) {
       var wrap = ensureClusterWrap();
       if (!wrap) return;
       clearClusterNodes();
       var n = c.members.length;
+      var R = Math.min(86, 30 + n * 2);
+      var ring = document.createElement('div');
+      ring.className = 'cluster-ring';
+      ring.style.width = (R * 2 + 26) + 'px';
+      ring.style.height = (R * 2 + 26) + 'px';
+      placeClusterNode(wrap, ring, c.lat, c.lon, 0, 0);
       c.members.forEach(function (m, i) {
-        var ang = (Math.PI * 2 * i) / n;
-        placeClusterNode(wrap, clusterPinEl(m), m.lat, m.lon,
-          Math.cos(ang) * 34, Math.sin(ang) * 34);
+        var a = (2 * Math.PI * i) / n;
+        var offX = Math.round(R * Math.cos(a));
+        var offY = Math.round(R * Math.sin(a));
+        placeClusterNode(wrap, clusterPinEl(m), c.lat, c.lon, offX, offY);
       });
       if (_clusterLayer) _clusterLayer.draw();
     }
+
 
     function renderClusters() {
       if (!_clusterOn || typeof google === 'undefined' || !_map) return;
@@ -6878,10 +6951,9 @@
       }
     })(0);
   </script>
+  <script> (function () { if (!GM_KEY) return; var script = document.createElement("script"); script.src = "https://maps.googleapis.com/maps/api/js" + "?key=" + encodeURIComponent(GM_KEY) + "&libraries=places,marker" + "&callback=initMap" + "&loading=async"; script.async = true; script.defer = true; document.head.appendChild(script); })(); </script> 
 
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMLaJV9hUhsaA51VjHwBzER6_ixOfPv40&libraries=places,marker&callback=initMap&loading=async"
-    async defer></script>
+
 </body>
 
 </html>
