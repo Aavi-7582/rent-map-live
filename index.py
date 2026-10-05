@@ -6,6 +6,9 @@ from groq import Groq
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from pathlib import Path
+from fastapi.responses import FileResponse
+
 app = FastAPI()
 
 groq_client = Groq(
@@ -289,3 +292,9 @@ Return ONLY valid JSON.
             status_code=500,
             detail="Failed to extract home requirements"
         )
+
+BASE_DIR = Path(__file__).resolve().parent
+
+@app.get("/")
+def serve_frontend():
+    return FileResponse(BASE_DIR / "dist" / "index.html")
