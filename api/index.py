@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/societies")
+@app.get("/societies")
 def get_societies_by_village(
     village: str = Query(..., min_length=1)
 ):
@@ -95,7 +95,7 @@ def get_societies_by_village(
     finally:
         conn.close()
 
-@app.get("/api/home-search")
+@app.get("/home-search")
 def home_search(location: str):
 
     db_url = DB_URL
@@ -200,7 +200,7 @@ def home_search(location: str):
         conn.close()
 
 
-@app.post("/api/parse-home")
+@app.post("/parse-home")
 def parse_home_requirements(payload: dict):
 
     text = payload.get("text", "").strip()
