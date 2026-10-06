@@ -1,0 +1,19 @@
+# Build-context exclusions for the Docker image 
+.git
+.vercel
+.vscode
+__pycache__
+*.pyc
+*.pyo
+venv
+.venv
+node_modules
+# dist/ is generated at container startup by build.py with RUNTIME env vars.
+# Never bake a locally-built dist/ (may contain dev keys) into the image.
+dist
+# Never copy secrets into the image.
+.env
+.env.*
+Dockerfile
+.dockerignore
+docker-compose.yml

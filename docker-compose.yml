@@ -1,0 +1,23 @@
+# Docker Compose for Coolify — single application service.
+# External dependencies (Supabase/PostgreSQL, Groq API, Google Maps) remain
+# external; no database/redis/nginx/node services are required.
+#
+# All secret values come from Coolify's environment configuration at deploy
+# time (interpolated below). Nothing is hardcoded here.
+services:
+  rent-map-live:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rent-map-live:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Frontend build (python build.py runs at container start)
+      GOOGLE_MAPS_API_KEY: "${GOOGLE_MAPS_API_KEY}"
+      SUPABASE_URL: "${SUPABASE_URL}"
+      SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
+      # Backend (read at FastAPI import time)
+      SUPABASE_DB_URL: "${SUPABASE_DB_URL}"
+      GROQ_API_KEY: "${GROQ_API_KEY}"
