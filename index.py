@@ -298,3 +298,11 @@ BASE_DIR = Path(__file__).resolve().parent
 @app.get("/")
 def serve_frontend():
     return FileResponse(BASE_DIR / "dist" / "index.html")
+
+@app.get("/style.css")
+def serve_css():
+    return FileResponse(BASE_DIR / "dist" / "style.css")
+
+@app.get("/app.js")
+def serve_js():
+    return FileResponse(BASE_DIR / "dist" / "app.js")
