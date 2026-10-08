@@ -2536,6 +2536,10 @@ function escapeHtml(value) {
       _filterOpen = !_filterOpen;
       bar.classList.toggle('collapsed', !_filterOpen);
       if (btn) btn.classList.toggle('off', !_filterOpen);
+      // Mobile layout hook ONLY: lets the village search row + Find My Home
+      // follow the card up / down (see body.filter-closed in style.css).
+      // The toggle logic, _filterOpen and every handler stay exactly as-is.
+      document.body.classList.toggle('filter-closed', !_filterOpen);
     }
 
     // "Hide" button: hides every floating panel so the map is unobstructed
@@ -2812,8 +2816,66 @@ function escapeHtml(value) {
         placeClusterNode(wrap, clusterPinEl(m), c.lat, c.lon, offX, offY);
       });
       if (_clusterLayer) _clusterLayer.draw();
+      alignClusterLabels();
     }
 
+    // ── Name chips: keep every label readable ────────────────────────────────
+    // Labels are always visible now (CSS), so AFTER the nodes are placed we
+    // measure every chip in the wrapper's own coordinate space. Pills and pin
+    // dots are fixed obstacles; a chip that would collide with one (or with a
+    // chip already placed) is pushed straight DOWN until it clears. This is
+    // what keeps societies that share one coordinate (spiderfy ring / adjacent
+    // cells) in a neat vertical stack instead of unreadable overlapping names.
+    // Purely presentational: no cluster math, counts, clicks or existing
+    // handlers are touched.
+    function alignClusterLabels() {
+      var wrap = ensureClusterWrap();
+      if (!wrap) return;
+      var kids = wrap.children;
+      var fixed = [];   // pills + pin dots (never moved)
+      var pins = [];    // pins that own a label chip
+      for (var i = 0; i < kids.length; i++) {
+        var el = kids[i];
+        var isPin = el.classList.contains('cluster-pin');
+        var isPill = el.classList.contains('cluster-pill');
+        if (!isPin && !isPill) continue;           // ring / unknown nodes: skip
+        var cx = el.offsetLeft, cy = el.offsetTop;
+        fixed.push({
+          l: cx - el.offsetWidth / 2, t: cy - el.offsetHeight / 2,
+          r: cx + el.offsetWidth / 2, b: cy + el.offsetHeight / 2,
+          src: el
+        });
+        if (isPin) {
+          var lab = el.querySelector('.clabel');
+          if (lab) pins.push({ el: el, lab: lab, cx: cx, cy: cy });
+        }
+      }
+      if (pins.length < 2) return;                 // nothing can overlap
+      pins.sort(function (a, b) { return (a.cy - b.cy) || (a.cx - b.cx); });
+      var placed = [];
+      pins.forEach(function (p) {
+        p.lab.style.marginTop = '';                // back to the CSS baseline
+        var w = p.lab.offsetWidth, h = p.lab.offsetHeight;
+        if (!w || !h) return;
+        var base = p.cy + 11 + 6;                  // below the 22px dot + gap
+        var L = p.cx - w / 2, R = p.cx + w / 2;
+        var top = base, moved = true, guard = 0;
+        while (moved && guard++ < 60) {
+          moved = false;
+          var rects = fixed.concat(placed);
+          for (var j = 0; j < rects.length; j++) {
+            var q = rects[j];
+            if (q.src === p.el) continue;          // never fight our own dot
+            if (L < q.r + 4 && R > q.l - 4 && top < q.b + 4 && top + h > q.t - 4) {
+              top = q.b + 4;
+              moved = true;
+            }
+          }
+        }
+        if (top !== base) p.lab.style.marginTop = (6 + (top - base)) + 'px';
+        placed.push({ l: L, t: top, r: R, b: top + h });
+      });
+    }
 
     function renderClusters() {
       if (!_clusterOn || typeof google === 'undefined' || !_map) return;
@@ -2853,6 +2915,7 @@ function escapeHtml(value) {
         else placeClusterNode(wrap, clusterPillEl(c), c.lat, c.lon, 0, 0);
       });
       if (_clusterLayer) _clusterLayer.draw();
+      alignClusterLabels();
       setClusterCount(nodes);
     }
 

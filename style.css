@@ -3168,7 +3168,10 @@
     /* ── "Hide" button: takes every floating panel off the map ── */
     body.chrome-hidden #filterbar,
     body.chrome-hidden #quick-actions,
-    body.chrome-hidden #map-controls {
+    body.chrome-hidden #map-controls ,
+    body.chrome-hidden #village-clear-btn,
+    body.chrome-hidden #village-search-wrap,
+    body.chrome-hidden #home-finder-btn{
       opacity: 0;
       pointer-events: none;
     }
@@ -3376,7 +3379,7 @@
       font-size: 0.64rem;
       font-weight: 600;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-      opacity: 0;
+      opacity: 1;
       pointer-events: none;
       transition: opacity 0.12s ease-in;
     }
@@ -3928,3 +3931,76 @@
     cursor: pointer;
 }
   
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE (≤900px) — "Search village" row + "Find My Home" button.
+   Their desktop rules anchor with left:90% / left:10% + translate(-50%),
+   which hangs both widgets off narrow screens. These rules re-pin them to a
+   clean left-column stack: below the topbar + filter card (top:156px) and
+   to the LEFT of the right-side #map-controls strip (starts at 100vw-70px).
+   Presentation ONLY — same element ids, same handlers, same behaviour.
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  /* Village search pill: fixed top-left under the filter card, width capped
+     so it never runs beneath the right-side map control stack. */
+  #village-search-wrap {
+    top: 224px;
+    left: 12px;
+    box-sizing: border-box;
+    width: min(300px, calc(100vw - 150px));
+    height: 44px;
+    transform: none;
+    transition: top 0.18s ease;
+  }
+
+  /* Clear (✕) button: same row, immediately right of the pill, styled to
+     match it (previously it floated alone, dim and invisible, in the topbar). */
+  #village-clear-btn {
+    position: fixed;
+    top: 224px;
+    left: calc(18px + min(300px, 100vw - 150px));
+    box-sizing: border-box;
+    width: 46px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13, 18, 32, 0.96);
+    border: 1px solid #2a3650;
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 0.95rem;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
+    z-index: 10000;
+    transition: top 0.18s ease;
+  }
+
+  /* Find My Home: left-aligned under the village search row, compact. */
+  #home-finder-btn {
+    top: 280px;
+    left: 12px;
+    transform: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    transition: top 0.18s ease;
+  }
+
+  /* ☰ Filter collapsed on mobile: the card is invisible but the layout keeps
+     the band it used to fill, leaving an empty gap above the village search
+     row. Pull "Search village" + "Find My Home" UP into that band - and back
+     down when the card is shown again. Driven by the one-line body-class sync
+     in toggleFilterBar(); the toggle, _filterOpen and all handlers are
+     untouched. Filter card open: top 156 + ~42 tall -> ends ~198, so the
+     collapsed top 156 keeps the same rhythm as the open state (pill directly
+     under the quick-actions, Find My Home 12 px below the pill). */
+  body.filter-closed #village-search-wrap,
+  body.filter-closed #village-clear-btn {
+    top: 156px;
+  }
+
+  body.filter-closed #home-finder-btn {
+    top: 212px;
+  }
+}
+
